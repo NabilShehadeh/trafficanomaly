@@ -1,0 +1,1 @@
+🛡️ Real-time network traffic anomaly detection system using Kafka+Spark streaming, ML algorithms (Isolation Forest, Autoencoder, Clustering), and Streamlit dashboard. Detects intrusions, DDoS attacks & unusual patterns with live alerts. Features CICIDS2017 dataset integration, packet capture, Docker deployment & CI/CD pipeline.
