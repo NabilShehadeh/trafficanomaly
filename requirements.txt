@@ -1,0 +1,36 @@
+# Core ML and Data Processing
+scikit-learn==1.3.2
+pandas==2.1.4
+numpy==1.24.3
+scipy==1.11.4
+
+# Real-time Processing
+kafka-python==2.0.2
+pyspark==3.5.0
+apache-flink==1.18.1
+
+# Network Traffic Analysis
+scapy==2.5.0
+dpkt==1.9.8
+pyshark==0.6
+
+# Anomaly Detection Models
+isolation-forest==0.1.0
+pyod==1.1.0
+autoencoder==0.1.0
+
+# Dashboard and Visualization
+streamlit==1.28.1
+plotly==5.17.0
+matplotlib==3.8.2
+seaborn==0.13.0
+
+# Data Storage and Processing
+sqlite3
+h5py==3.10.0
+joblib==1.3.2
+
+# Utilities
+tqdm==4.66.1
+requests==2.31.0
+python-dotenv==1.0.0
