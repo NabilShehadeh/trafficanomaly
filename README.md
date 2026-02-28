@@ -66,15 +66,6 @@ streamlit run src/dashboard/app.py
 python src/models/train_models.py
 ```
 
-## Skills Demonstrated
-
-- **In-stream Data Processing**: Real-time analysis using Kafka and Spark
-- **Predictive Modeling**: Multiple ML algorithms for anomaly detection
-- **Anomaly Detection**: Advanced techniques for identifying network intrusions
-- **Networking Principles**: OSI model compliance and packet analysis
-- **ETL Pipeline**: Extract, Transform, Load operations for network data
-- **Streaming Analytics**: Live monitoring and alerting capabilities
-
 ## Technologies Used
 
 - **Data Processing**: Apache Spark, Apache Flink, Kafka
@@ -82,15 +73,7 @@ python src/models/train_models.py
 - **Network Analysis**: Scapy, PyShark, dpkt
 - **Visualization**: Streamlit, Plotly, Matplotlib
 - **Data Sources**: CICIDS2017, Wireshark packet captures
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Submit a pull request
-
+  
 ## License
 
 MIT License - see LICENSE file for details
