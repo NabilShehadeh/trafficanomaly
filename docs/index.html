@@ -3,175 +3,225 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Traffic Anomaly Detection - Interactive Dashboard</title>
+  <title>Interactive Dashboard - Traffic Anomaly Detection</title>
   <style>
     * { box-sizing: border-box; }
-    body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 1rem; background: #0f1419; color: #e6edf3; }
-    h1 { margin: 0 0 0.5rem; font-size: 1.5rem; }
-    .sub { color: #8b949e; font-size: 0.9rem; margin-bottom: 1.5rem; }
-    a { color: #58a6ff; }
-    .chart { margin-bottom: 2rem; background: #161b22; border-radius: 8px; padding: 1rem; }
-    .chart h2 { margin: 0 0 0.75rem; font-size: 1.1rem; font-weight: 600; }
-    .plot-container { width: 100%; height: 400px; background: #161b22; }
+    body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 16px; background: #f6f8fa; color: #24292f; }
+    a { color: #0969da; }
+    .header { margin-bottom: 20px; }
+    .header h1 { margin: 0 0 4px; font-size: 1.75rem; font-weight: 700; }
+    .header .sub { color: #57606a; font-size: 0.9rem; }
+    .top-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 20px; }
+    .metrics { display: flex; gap: 12px; flex-wrap: wrap; }
+    .metric-box { background: #eaeef2; border-radius: 8px; padding: 14px 18px; min-width: 140px; }
+    .metric-box .value { font-size: 1.5rem; font-weight: 700; display: block; }
+    .metric-box .label { font-size: 0.75rem; color: #57606a; margin-top: 2px; }
+    .main { display: grid; grid-template-columns: 340px 1fr; gap: 20px; }
+    @media (max-width: 900px) { .main { grid-template-columns: 1fr; } }
+    .panel { background: #fff; border: 1px solid #d0d7de; border-radius: 8px; padding: 16px; }
+    .panel h2 { margin: 0 0 4px; font-size: 0.95rem; font-weight: 600; }
+    .panel .subtitle { font-size: 0.8rem; color: #57606a; margin-bottom: 12px; }
+    .live-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+    .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #2da44e; }
+    .alerts-list { max-height: 380px; overflow-y: auto; }
+    .alert-item { padding: 10px 0; border-bottom: 1px solid #d0d7de; font-size: 0.8rem; }
+    .alert-item:last-child { border-bottom: 0; }
+    .alert-type { font-weight: 600; }
+    .alert-meta { color: #57606a; margin-top: 2px; }
+    .severity { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 600; margin-left: 4px; }
+    .severity-LOW { background: #eaeef2; color: #424a53; }
+    .severity-MEDIUM { background: #fff8c5; color: #633c01; }
+    .severity-HIGH { background: #ffd8b9; color: #873800; }
+    .severity-CRITICAL { background: #ffebe9; color: #cf222e; }
+    .chart-wrap { width: 100%; height: 280px; margin-top: 8px; }
+    .chart-wrap.bar-chart { height: 260px; }
+    .filters { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+    .filter-btn { padding: 6px 12px; border: 1px solid #d0d7de; background: #fff; border-radius: 6px; font-size: 0.8rem; cursor: pointer; }
+    .filter-btn.active { background: #24292f; color: #fff; border-color: #24292f; }
+    .right-col { display: flex; flex-direction: column; gap: 20px; }
     svg { display: block; width: 100%; height: 100%; }
-    .legend { margin-top: 8px; font-size: 0.85rem; }
-    .legend span { margin-right: 16px; }
-    .legend .packets { color: #58a6ff; }
-    .legend .anomalies { color: #f85149; }
-    .heatmap-table { border-collapse: collapse; width: 100%; font-size: 0.75rem; }
-    .heatmap-table th, .heatmap-table td { border: 1px solid #30363d; padding: 4px 6px; text-align: center; min-width: 36px; }
-    .heatmap-table th { background: #21262d; color: #8b949e; }
-    .bar-row { display: flex; align-items: flex-end; gap: 4px; height: 120px; margin-bottom: 24px; }
-    .bar-row:last-child { margin-bottom: 0; }
-    .bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; }
-    .bar { width: 100%; min-height: 2px; background: #58a6ff; border-radius: 2px 2px 0 0; transition: opacity 0.2s; }
-    .bar-wrap.anomaly .bar { background: #f85149; }
-    .bar-label { font-size: 0.7rem; color: #8b949e; margin-top: 4px; }
   </style>
 </head>
 <body>
-  <h1>Traffic Anomaly Detection</h1>
-  <p class="sub">Interactive graph, histogram and heatmap. <a href="https://github.com/NabilShehadeh/trafficanomaly">View repo</a></p>
+  <div class="header">
+    <h1>INTERACTIVE DASHBOARD</h1>
+    <p class="sub">Simulated real-time anomaly detection — alerts stream live and model performance metrics update automatically. <a href="https://github.com/NabilShehadeh/trafficanomaly">View repo</a></p>
+  </div>
 
-  <div class="chart">
-    <h2>Interactive graph - Traffic over time</h2>
-    <div id="graph" class="plot-container"></div>
-    <div class="legend" id="graph-legend"><span class="packets">Packets</span><span class="anomalies">Anomalies</span></div>
+  <div class="top-row">
+    <div></div>
+    <div class="metrics">
+      <div class="metric-box"><span class="value">2.4M</span><span class="label">Packets Analyzed (last hour)</span></div>
+      <div class="metric-box"><span class="value">347</span><span class="label">Anomalies Detected (last hour)</span></div>
+      <div class="metric-box"><span class="value">1.8%</span><span class="label">False Positive Rate (ensemble avg.)</span></div>
+      <div class="metric-box"><span class="value">42ms</span><span class="label">Avg. Latency (detection time)</span></div>
+    </div>
   </div>
-  <div class="chart">
-    <h2>Interactive histogram - Packet length and anomaly scores</h2>
-    <div id="histogram" class="plot-container"></div>
-  </div>
-  <div class="chart">
-    <h2>Interactive heatmap - Feature correlations</h2>
-    <div id="heatmap" class="plot-container"></div>
+
+  <div class="main">
+    <div class="panel">
+      <div class="live-header">
+        <span class="live-dot"></span>
+        <h2 style="margin:0;">LIVE ALERT FEED</h2>
+        <button class="filter-btn" id="pause-btn">Pause</button>
+      </div>
+      <div class="alerts-list" id="alerts-list"></div>
+    </div>
+
+    <div class="right-col">
+      <div class="panel">
+        <h2>ANOMALY DETECTIONS OVER TIME</h2>
+        <p class="subtitle">Detections per model, rolling 10-minute window</p>
+        <div class="filters">
+          <button class="filter-btn active">All</button>
+          <button class="filter-btn">Isolation</button>
+          <button class="filter-btn">Autoencoder</button>
+          <button class="filter-btn">K-Means</button>
+          <button class="filter-btn">DBSCAN</button>
+        </div>
+        <div id="line-chart" class="chart-wrap"></div>
+      </div>
+      <div class="panel">
+        <h2>MODEL PERFORMANCE METRICS</h2>
+        <p class="subtitle">Precision, Recall & F1 Score on CICIDS2017 benchmark</p>
+        <div id="bar-chart" class="chart-wrap bar-chart"></div>
+      </div>
+    </div>
   </div>
 
   <script>
     (function() {
-      var bucket = [0, 40, 80, 120, 160, 200, 240, 280, 320, 360, 400, 440, 480, 520, 560, 600, 640, 680, 720, 760];
-      var packets = [42, 38, 55, 61, 48, 72, 88, 51, 45, 59, 63, 71, 49, 82, 67, 54, 90, 58, 44, 76];
-      var anomalies = [2, 1, 3, 2, 2, 4, 5, 2, 1, 3, 3, 4, 2, 4, 3, 2, 5, 3, 2, 4];
-      var packetLengths = [64, 128, 256, 512, 768, 1024, 1280, 1500];
-      var lengthCounts = [120, 340, 280, 180, 95, 60, 45, 80];
-      var anomalyScores = [-0.15, -0.10, -0.05, 0, 0.05, 0.10, 0.15];
-      var scoreCounts = [80, 220, 350, 420, 180, 90, 60];
-      var features = ['src_port', 'dst_port', 'pkt_len', 'duration', 'bytes_sent', 'bytes_rcv', 'pkts_sent', 'pkts_rcv'];
-      var corrMatrix = [
-        [1, 0.02, 0.1, 0.05, 0.3, 0.2, 0.4, 0.25],
-        [0.02, 1, 0.08, 0.03, 0.15, 0.18, 0.12, 0.2],
-        [0.1, 0.08, 1, 0.22, 0.35, 0.28, 0.32, 0.3],
-        [0.05, 0.03, 0.22, 1, 0.4, 0.35, 0.38, 0.36],
-        [0.3, 0.15, 0.35, 0.4, 1, 0.7, 0.85, 0.72],
-        [0.2, 0.18, 0.28, 0.35, 0.7, 1, 0.68, 0.8],
-        [0.4, 0.12, 0.32, 0.38, 0.85, 0.68, 1, 0.75],
-        [0.25, 0.2, 0.3, 0.36, 0.72, 0.8, 0.75, 1]
+      var alerts = [
+        { type: 'Port Scan', ip: '10.0.0.47', model: 'Autoencoder', time: '4:34:20 PM', conf: 92.0, sev: 'MEDIUM' },
+        { type: 'Brute Force', ip: '192.168.1.104', model: 'Isolation Forest', time: '4:34:20 PM', conf: 88.0, sev: 'LOW' },
+        { type: 'SQL Injection', ip: '203.0.113.12', model: 'K-Means', time: '4:34:22 PM', conf: 95.0, sev: 'MEDIUM' },
+        { type: 'Botnet C2', ip: '198.51.100.8', model: 'DBSCAN', time: '4:34:22 PM', conf: 89.0, sev: 'MEDIUM' },
+        { type: 'DNS Amplification', ip: '172.16.8.23', model: 'Isolation Forest', time: '4:34:24 PM', conf: 97.0, sev: 'HIGH' },
+        { type: 'DDoS', ip: '45.33.32.156', model: 'Autoencoder', time: '4:34:24 PM', conf: 99.0, sev: 'CRITICAL' },
+        { type: 'Port Scan', ip: '203.0.113.5', model: 'K-Means', time: '4:34:26 PM', conf: 85.0, sev: 'LOW' },
+        { type: 'Brute Force', ip: '10.0.0.89', model: 'DBSCAN', time: '4:34:28 PM', conf: 91.0, sev: 'MEDIUM' },
       ];
+      var timeLabels = ['T-9m', 'T-8m', 'T-7m', 'T-6m', 'T-5m', 'T-4m', 'T-3m', 'T-2m', 'T-1m', 'T-0m'];
+      var isolation = [3, 5, 4, 7, 6, 8, 5, 9, 7, 8];
+      var autoencoder = [2, 4, 6, 5, 7, 6, 9, 7, 8, 10];
+      var kmeans = [4, 3, 5, 6, 5, 7, 6, 8, 6, 9];
+      var dbscan = [1, 2, 3, 4, 5, 4, 6, 5, 7, 6];
+      var perfLabels = ['Isolation Forest', 'Autoencoder', 'K-Means', 'DBSCAN'];
+      var precision = [94, 91, 89, 87];
+      var recall = [92, 90, 88, 85];
+      var f1 = [93, 90.5, 88.5, 86];
+
+      function renderAlerts() {
+        var el = document.getElementById('alerts-list');
+        if (!el) return;
+        var html = '';
+        for (var i = 0; i < alerts.length; i++) {
+          var a = alerts[i];
+          var icon = a.sev === 'CRITICAL' || a.sev === 'HIGH' ? '&#9888;' : '&#9898;';
+          html += '<div class="alert-item"><span class="alert-type">' + a.type + '</span> ' + a.ip + ' <span class="severity severity-' + a.sev + '">' + a.sev + '</span><div class="alert-meta">' + a.model + ' &middot; ' + a.time + ' &middot; Confidence: ' + a.conf + '%</div></div>';
+        }
+        el.innerHTML = html;
+      }
 
       function drawLineChart() {
-        var el = document.getElementById('graph');
+        var el = document.getElementById('line-chart');
         if (!el) return;
         var w = el.offsetWidth;
         var h = el.offsetHeight;
-        var pad = { top: 20, right: 20, bottom: 40, left: 45 };
+        var pad = { top: 25, right: 35, bottom: 35, left: 45 };
         var plotW = w - pad.left - pad.right;
         var plotH = h - pad.top - pad.bottom;
+        var maxVal = 12;
+        var series = [isolation, autoencoder, kmeans, dbscan];
+        var colors = ['#0969da', '#8250df', '#bf8700', '#cf222e'];
+        var strokeDash = ['0', '8,4', '2,2', '4,2,2,2'];
 
-        var maxP = Math.max.apply(null, packets);
-        var maxA = Math.max.apply(null, anomalies);
-        var maxY = Math.max(maxP, maxA, 1);
-        var minX = bucket[0];
-        var maxX = bucket[bucket.length - 1];
+        function xScale(i) { return pad.left + (i / (timeLabels.length - 1)) * plotW; }
+        function yScale(v) { return pad.top + plotH - (v / maxVal) * plotH; }
 
-        function xScale(x) { return pad.left + (x - minX) / (maxX - minX || 1) * plotW; }
-        function yScaleP(y) { return pad.top + plotH - (y / maxY) * plotH; }
-        function yScaleA(y) { return pad.top + plotH - (y / maxY) * plotH; }
-
-        var pathPackets = bucket.map(function(x, i) { return xScale(x) + ',' + yScaleP(packets[i]); }).join(' ');
-        var pathAnomalies = bucket.map(function(x, i) { return xScale(x) + ',' + yScaleA(anomalies[i]); }).join(' ');
-
-        var svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="xMidYMid meet">';
-        svg += '<line x1="' + pad.left + '" y1="' + (pad.top + plotH) + '" x2="' + (pad.left + plotW) + '" y2="' + (pad.top + plotH) + '" stroke="#30363d" stroke-width="1"/>';
-        svg += '<line x1="' + pad.left + '" y1="' + pad.top + '" x2="' + pad.left + '" y2="' + (pad.top + plotH) + '" stroke="#30363d" stroke-width="1"/>';
-        svg += '<polyline fill="none" stroke="#58a6ff" stroke-width="2" stroke-linejoin="round" points="' + pathPackets + '"/>';
-        svg += '<polyline fill="none" stroke="#f85149" stroke-width="2" stroke-linejoin="round" points="' + pathAnomalies + '"/>';
-        for (var i = 0; i < bucket.length; i += 4) {
-          svg += '<circle cx="' + xScale(bucket[i]) + '" cy="' + yScaleP(packets[i]) + '" r="3" fill="#58a6ff"/>';
-          svg += '<circle cx="' + xScale(bucket[i]) + '" cy="' + yScaleA(anomalies[i]) + '" r="3" fill="#f85149"/>';
+        var svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="xMidYMid meet"><rect width="' + w + '" height="' + h + '" fill="transparent"/>';
+        svg += '<line x1="' + pad.left + '" y1="' + (pad.top + plotH) + '" x2="' + (pad.left + plotW) + '" y2="' + (pad.top + plotH) + '" stroke="#d0d7de" stroke-width="1"/>';
+        svg += '<line x1="' + pad.left + '" y1="' + pad.top + '" x2="' + pad.left + '" y2="' + (pad.top + plotH) + '" stroke="#d0d7de" stroke-width="1"/>';
+        for (var t = 0; t <= maxVal; t += 4) {
+          var y = yScale(t);
+          svg += '<line x1="' + pad.left + '" y1="' + y + '" x2="' + (pad.left + plotW) + '" y2="' + y + '" stroke="#d0d7de" stroke-width="0.5" stroke-dasharray="2,2"/>';
         }
-        svg += '<text x="' + pad.left + '" y="' + (pad.top - 5) + '" fill="#8b949e" font-size="11">Count</text>';
-        svg += '<text x="' + (pad.left + plotW / 2) + '" y="' + (h - 5) + '" fill="#8b949e" font-size="11" text-anchor="middle">Sample bucket</text>';
+        for (var s = 0; s < series.length; s++) {
+          var pts = [];
+          for (var i = 0; i < series[s].length; i++) pts.push(xScale(i) + ',' + yScale(series[s][i]));
+          svg += '<polyline fill="none" stroke="' + colors[s] + '" stroke-width="2" stroke-dasharray="' + strokeDash[s] + '" stroke-linejoin="round" points="' + pts.join(' ') + '"/>';
+          for (var i = 0; i < series[s].length; i++) svg += '<circle cx="' + xScale(i) + '" cy="' + yScale(series[s][i]) + '" r="3" fill="' + colors[s] + '"/>';
+        }
+        for (var i = 0; i < timeLabels.length; i++) {
+          var x = xScale(i);
+          svg += '<text x="' + x + '" y="' + (h - 8) + '" fill="#57606a" font-size="10" text-anchor="middle">' + timeLabels[i] + '</text>';
+        }
+        svg += '<text x="' + pad.left + '" y="' + (pad.top - 8) + '" fill="#57606a" font-size="10">Detections</text>';
+        svg += '<text x="' + (pad.left + 12) + '" y="' + (pad.top + plotH / 2) + '" fill="#57606a" font-size="10" transform="rotate(-90 ' + (pad.left + 12) + ' ' + (pad.top + plotH / 2) + ')">Count</text>';
         svg += '</svg>';
         el.innerHTML = svg;
       }
 
-      function drawHistogram() {
-        var el = document.getElementById('histogram');
+      function drawBarChart() {
+        var el = document.getElementById('bar-chart');
         if (!el) return;
-        var maxLen = Math.max.apply(null, lengthCounts);
-        var maxScore = Math.max.apply(null, scoreCounts);
-        var maxH = 120;
+        var w = el.offsetWidth;
+        var h = el.offsetHeight;
+        var pad = { top: 20, right: 20, bottom: 45, left: 90 };
+        var plotW = w - pad.left - pad.right;
+        var plotH = h - pad.top - pad.bottom;
+        var groups = perfLabels.length;
+        var barsPerGroup = 3;
+        var groupWidth = plotW / groups;
+        var barGap = 4;
+        var barWidth = (groupWidth - barGap * (barsPerGroup + 1)) / barsPerGroup;
+        var maxVal = 100;
+        var minVal = 80;
 
-        var html = '<div style="padding: 10px 0;">';
-        html += '<div style="margin-bottom: 8px; color: #8b949e; font-size: 0.8rem;">Packet length (bytes)</div>';
-        html += '<div class="bar-row">';
-        for (var i = 0; i < packetLengths.length; i++) {
-          var pct = maxLen > 0 ? lengthCounts[i] / maxLen : 0;
-          html += '<div class="bar-wrap"><div class="bar" style="height: ' + (pct * maxH) + 'px" title="' + packetLengths[i] + ': ' + lengthCounts[i] + '"></div><div class="bar-label">' + packetLengths[i] + '</div></div>';
+        function yScale(v) { return pad.top + plotH - ((v - minVal) / (maxVal - minVal)) * plotH; }
+
+        var svg = '<svg viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="xMidYMid meet"><rect width="' + w + '" height="' + h + '" fill="transparent"/>';
+        svg += '<line x1="' + pad.left + '" y1="' + (pad.top + plotH) + '" x2="' + (pad.left + plotW) + '" y2="' + (pad.top + plotH) + '" stroke="#d0d7de" stroke-width="1"/>';
+        svg += '<line x1="' + pad.left + '" y1="' + pad.top + '" x2="' + pad.left + '" y2="' + (pad.top + plotH) + '" stroke="#d0d7de" stroke-width="1"/>';
+        for (var v = 85; v <= 100; v += 5) {
+          var y = yScale(v);
+          svg += '<line x1="' + pad.left + '" y1="' + y + '" x2="' + (pad.left + plotW) + '" y2="' + y + '" stroke="#d0d7de" stroke-width="0.5" stroke-dasharray="2,2"/>';
+          svg += '<text x="' + (pad.left - 6) + '" y="' + (y + 4) + '" fill="#57606a" font-size="10" text-anchor="end">' + v + '</text>';
         }
-        html += '</div>';
-        html += '<div style="margin-top: 24px; margin-bottom: 8px; color: #8b949e; font-size: 0.8rem;">Anomaly score</div>';
-        html += '<div class="bar-row">';
-        for (var j = 0; j < anomalyScores.length; j++) {
-          var pct2 = maxScore > 0 ? scoreCounts[j] / maxScore : 0;
-          html += '<div class="bar-wrap anomaly"><div class="bar" style="height: ' + (pct2 * maxH) + 'px" title="' + anomalyScores[j] + ': ' + scoreCounts[j] + '"></div><div class="bar-label">' + anomalyScores[j] + '</div></div>';
-        }
-        html += '</div></div>';
-        el.innerHTML = html;
-      }
-
-      function heatmapColor(v) {
-        if (v <= 0) return 'rgb(35, 134, 54)';
-        if (v >= 1) return 'rgb(218, 54, 51)';
-        var r = Math.round(35 + (218 - 35) * v);
-        var g = Math.round(134 + (54 - 134) * v);
-        var b = Math.round(54 + (51 - 54) * v);
-        return 'rgb(' + r + ',' + g + ',' + b + ')';
-      }
-
-      function drawHeatmap() {
-        var el = document.getElementById('heatmap');
-        if (!el) return;
-        var table = '<table class="heatmap-table"><thead><tr><th></th>';
-        for (var f = 0; f < features.length; f++) table += '<th>' + features[f] + '</th>';
-        table += '</tr></thead><tbody>';
-        for (var i = 0; i < corrMatrix.length; i++) {
-          table += '<tr><th>' + features[i] + '</th>';
-          for (var j = 0; j < corrMatrix[i].length; j++) {
-            var v = corrMatrix[i][j];
-            var color = heatmapColor((v + 0.2) / 1.2);
-            table += '<td style="background:' + color + '; color:' + (v > 0.5 ? '#fff' : '#e6edf3') + '" title="' + v + '">' + v.toFixed(2) + '</td>';
+        var allBars = [precision, recall, f1];
+        var barColors = ['#424a53', '#656d76', '#8c959f'];
+        for (var g = 0; g < groups; g++) {
+          var gx = pad.left + g * groupWidth + barGap;
+          for (var b = 0; b < barsPerGroup; b++) {
+            var val = allBars[b][g];
+            var bx = gx + b * (barWidth + barGap);
+            var by = yScale(val);
+            var bh = pad.top + plotH - by;
+            svg += '<rect x="' + bx + '" y="' + by + '" width="' + barWidth + '" height="' + bh + '" fill="' + barColors[b] + '" rx="2"/>';
           }
-          table += '</tr>';
+          var labelX = pad.left + (g + 0.5) * groupWidth;
+          var shortLabel = perfLabels[g].replace(' Forest', '').replace('Encoder', 'Enc.');
+          svg += '<text x="' + labelX + '" y="' + (h - 12) + '" fill="#57606a" font-size="9" text-anchor="middle">' + shortLabel + '</text>';
         }
-        table += '</tbody></table>';
-        el.innerHTML = '<div style="overflow-x: auto; padding: 8px 0;">' + table + '</div>';
+        svg += '<text x="' + (pad.left - 50) + '" y="' + (pad.top + plotH / 2) + '" fill="#57606a" font-size="10" transform="rotate(-90 ' + (pad.left - 50) + ' ' + (pad.top + plotH / 2) + ')">Score (%)</text>';
+        svg += '<text x="' + (pad.left + 30) + '" y="' + (pad.top - 5) + '" fill="#57606a" font-size="9">Precision</text>';
+        svg += '<rect x="' + (pad.left + 55) + '" y="' + (pad.top - 8) + '" width="10" height="8" fill="#424a53" rx="1"/>';
+        svg += '<text x="' + (pad.left + 95) + '" y="' + (pad.top - 5) + '" fill="#57606a" font-size="9">Recall</text>';
+        svg += '<rect x="' + (pad.left + 125) + '" y="' + (pad.top - 8) + '" width="10" height="8" fill="#656d76" rx="1"/>';
+        svg += '<text x="' + (pad.left + 165) + '" y="' + (pad.top - 5) + '" fill="#57606a" font-size="9">F1</text>';
+        svg += '<rect x="' + (pad.left + 182) + '" y="' + (pad.top - 8) + '" width="10" height="8" fill="#8c959f" rx="1"/>';
+        svg += '</svg>';
+        el.innerHTML = svg;
       }
 
       function init() {
+        renderAlerts();
         drawLineChart();
-        drawHistogram();
-        drawHeatmap();
-        window.addEventListener('resize', function() {
-          drawLineChart();
-        });
+        drawBarChart();
+        window.addEventListener('resize', function() { drawLineChart(); drawBarChart(); });
       }
-
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-      } else {
-        init();
-      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+      else init();
     })();
   </script>
 </body>
