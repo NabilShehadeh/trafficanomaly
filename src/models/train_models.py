@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 def main():
     """Main training function"""
-    print("🤖 Training Network Traffic Anomaly Detection Models")
+    print("Training Network Traffic Anomaly Detection Models")
     print("=" * 60)
     
     # Initialize components
@@ -158,10 +158,10 @@ def main():
 if __name__ == "__main__":
     success = main()
     if success:
-        print("\n🎉 Model training completed successfully!")
+        print("\nModel training completed successfully.")
         print("\nNext steps:")
         print("1. Start the dashboard: streamlit run src/dashboard/app.py")
         print("2. Start the streaming pipeline: python src/streaming/pipeline.py")
     else:
-        print("\n❌ Model training failed!")
+        print("\nModel training failed.")
         sys.exit(1)

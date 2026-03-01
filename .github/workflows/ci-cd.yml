@@ -44,9 +44,9 @@ jobs:
             from src.data_collection.collector import NetworkDataCollector
             from src.data_processing.processor import NetworkDataProcessor
             from src.models.anomaly_detector import AnomalyDetector
-            print('✅ All modules imported successfully')
+            print('All modules imported successfully')
         except ImportError as e:
-            print(f'❌ Import error: {e}')
+            print(f'Import error: {e}')
             sys.exit(1)
         "
     
@@ -63,16 +63,16 @@ jobs:
         collector = NetworkDataCollector()
         test_data = collector.generate_synthetic_data(10)
         assert not test_data.empty, 'Data collection failed'
-        print('✅ Data collection test passed')
+        print('Data collection test passed')
         
         # Test data processing
         from src.data_processing.processor import NetworkDataProcessor
         processor = NetworkDataProcessor()
         processed_data = processor.parse_cicids2017_format(test_data)
         assert not processed_data.empty, 'Data processing failed'
-        print('✅ Data processing test passed')
+        print('Data processing test passed')
         
-        print('🎉 All basic tests passed!')
+        print('All basic tests passed.')
         "
     
     - name: Run linting
@@ -111,7 +111,7 @@ jobs:
         collector = NetworkDataCollector()
         data = collector.generate_synthetic_data(5)
         print(f'Generated {len(data)} synthetic samples')
-        print('✅ Application test passed')
+        print('Application test passed')
         "
 
   deploy:

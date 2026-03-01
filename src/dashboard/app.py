@@ -89,7 +89,7 @@ class DashboardManager:
     
     def create_traffic_overview(self, df: pd.DataFrame):
         """Create traffic overview section"""
-        st.subheader("📊 Network Traffic Overview")
+        st.subheader("Network Traffic Overview")
         
         col1, col2, col3, col4 = st.columns(4)
         
@@ -111,7 +111,7 @@ class DashboardManager:
     
     def create_traffic_visualizations(self, df: pd.DataFrame):
         """Create traffic visualizations"""
-        st.subheader("📈 Traffic Visualizations")
+        st.subheader("Traffic Visualizations")
         
         if df.empty:
             st.warning("No data available for visualization")
@@ -151,7 +151,7 @@ class DashboardManager:
     
     def create_anomaly_analysis(self, df: pd.DataFrame):
         """Create anomaly analysis section"""
-        st.subheader("🚨 Anomaly Analysis")
+        st.subheader("Anomaly Analysis")
         
         if 'is_anomaly' not in df.columns:
             st.warning("No anomaly data available")
@@ -160,7 +160,7 @@ class DashboardManager:
         anomalies_df = df[df['is_anomaly'] == 1]
         
         if anomalies_df.empty:
-            st.success("✅ No anomalies detected!")
+            st.success("No anomalies detected.")
             return
         
         col1, col2 = st.columns(2)
@@ -192,7 +192,7 @@ class DashboardManager:
     
     def create_model_performance(self):
         """Create model performance section"""
-        st.subheader("🤖 Model Performance")
+        st.subheader("Model Performance")
         
         if not st.session_state.model_trained:
             st.warning("No model trained yet. Train a model first.")
@@ -236,7 +236,7 @@ class DashboardManager:
     
     def create_alerts_section(self):
         """Create alerts section"""
-        st.subheader("🚨 Live Alerts")
+        st.subheader("Live Alerts")
         
         # Simulate real-time alerts
         if st.button("Generate Sample Alert"):
@@ -284,7 +284,7 @@ class DashboardManager:
     
     def create_system_config(self):
         """Create system configuration section"""
-        st.subheader("⚙️ System Configuration")
+        st.subheader("System Configuration")
         
         col1, col2 = st.columns(2)
         
@@ -305,17 +305,17 @@ class DashboardManager:
         col1, col2, col3 = st.columns(3)
         
         with col1:
-            if st.button("🚀 Start Pipeline"):
+            if st.button("Start Pipeline"):
                 st.session_state.pipeline_running = True
                 st.success("Pipeline started!")
         
         with col2:
-            if st.button("⏹️ Stop Pipeline"):
+            if st.button("Stop Pipeline"):
                 st.session_state.pipeline_running = False
                 st.warning("Pipeline stopped!")
         
         with col3:
-            if st.button("🔄 Restart Pipeline"):
+            if st.button("Restart Pipeline"):
                 st.session_state.pipeline_running = False
                 time.sleep(1)
                 st.session_state.pipeline_running = True
@@ -323,15 +323,15 @@ class DashboardManager:
         
         # Status indicator
         if st.session_state.pipeline_running:
-            st.success("🟢 Pipeline Status: RUNNING")
+            st.success("Pipeline Status: RUNNING")
         else:
-            st.error("🔴 Pipeline Status: STOPPED")
+            st.error("Pipeline Status: STOPPED")
 
 def main():
     """Main dashboard application"""
     st.set_page_config(
         page_title="Network Traffic Anomaly Detection",
-        page_icon="🛡️",
+        page_icon="",
         layout="wide",
         initial_sidebar_state="expanded"
     )
@@ -341,7 +341,7 @@ def main():
     dashboard.initialize_session_state()
     
     # Sidebar
-    st.sidebar.title("🛡️ Network Security Dashboard")
+    st.sidebar.title("Network Security Dashboard")
     st.sidebar.markdown("---")
     
     # Navigation
@@ -356,7 +356,7 @@ def main():
     
     # Main content based on selected page
     if page == "Dashboard":
-        st.title("🛡️ Network Traffic Anomaly Detection Dashboard")
+        st.title("Network Traffic Anomaly Detection Dashboard")
         st.markdown("Real-time monitoring and analysis of network traffic anomalies")
         
         # Overview metrics
@@ -366,28 +366,28 @@ def main():
         dashboard.create_traffic_visualizations(st.session_state.traffic_data)
         
         # Recent alerts
-        st.subheader("🚨 Recent Alerts")
+        st.subheader("Recent Alerts")
         if st.session_state.alerts:
             recent_alerts = st.session_state.alerts[-5:]  # Last 5 alerts
             for alert in recent_alerts:
                 severity_color = {
-                    'LOW': '🟢', 'MEDIUM': '🟡', 'HIGH': '🟠', 'CRITICAL': '🔴'
+                    'LOW': '[LOW]', 'MEDIUM': '[MED]', 'HIGH': '[HIGH]', 'CRITICAL': '[CRIT]'
                 }
-                st.write(f"{severity_color.get(alert['severity'], '⚪')} **{alert['severity']}**: {alert['description']}")
+                st.write(f"{severity_color.get(alert['severity'], '')} **{alert['severity']}**: {alert['description']}")
         else:
             st.info("No recent alerts")
     
     elif page == "Traffic Analysis":
-        st.title("📊 Traffic Analysis")
+        st.title("Traffic Analysis")
         
         dashboard.create_traffic_overview(st.session_state.traffic_data)
         dashboard.create_traffic_visualizations(st.session_state.traffic_data)
     
     elif page == "Anomaly Detection":
-        st.title("🚨 Anomaly Detection")
+        st.title("Anomaly Detection")
         
         # Train model button
-        if st.button("🤖 Train Anomaly Detection Models"):
+            if st.button("Train Anomaly Detection Models"):
             with st.spinner("Training models..."):
                 # Generate sample data for training
                 train_data = dashboard.generate_sample_data(5000)
@@ -405,15 +405,15 @@ def main():
         dashboard.create_anomaly_analysis(st.session_state.traffic_data)
     
     elif page == "Model Performance":
-        st.title("🤖 Model Performance")
+        st.title("Model Performance")
         dashboard.create_model_performance()
     
     elif page == "Alerts":
-        st.title("🚨 Alert Management")
+        st.title("Alert Management")
         dashboard.create_alerts_section()
     
     elif page == "Configuration":
-        st.title("⚙️ System Configuration")
+        st.title("System Configuration")
         dashboard.create_system_config()
     
     # Footer

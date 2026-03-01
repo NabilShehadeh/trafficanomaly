@@ -1,3 +1,4 @@
+#nabil shehadeh - trafficanomaly.py
 import sys
 import argparse
 import logging
@@ -49,9 +50,8 @@ def run_pipeline():
         logger.info("Starting real-time anomaly detection pipeline...")
 
         pipeline = RealTimePipeline()
-        pipeline.start_pipeline(use_synthetic_data=True)
-
-        return True
+        started = pipeline.start_pipeline(use_synthetic_data=True)
+        return started
 
     except KeyboardInterrupt:
         logger.info("Pipeline stopped by user")

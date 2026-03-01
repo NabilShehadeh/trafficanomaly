@@ -391,19 +391,19 @@ class RealTimePipeline:
         self.consumer_service = SparkStreamingConsumer(kafka_servers, topic)
         self.is_running = False
         
-    def start_pipeline(self, use_synthetic_data: bool = True, interface: str = None) -> None:
-        """Start the real-time pipeline"""
+    def start_pipeline(self, use_synthetic_data: bool = True, interface: str = None) -> bool:
+        """Start the real-time pipeline. Returns True if started, False if init failed."""
         try:
             logger.info("Starting real-time anomaly detection pipeline...")
             
             # Initialize services
             if not self.producer_service.initialize_producer():
                 logger.error("Failed to initialize producer")
-                return
+                return False
             
             if not self.consumer_service.initialize_spark():
                 logger.error("Failed to initialize Spark")
-                return
+                return False
             
             self.is_running = True
             
@@ -430,13 +430,16 @@ class RealTimePipeline:
             
             # Monitor alerts
             self._monitor_alerts()
+            return True
             
         except KeyboardInterrupt:
             logger.info("Stopping pipeline...")
             self.stop_pipeline()
+            return True
         except Exception as e:
             logger.error(f"Error in pipeline: {e}")
             self.stop_pipeline()
+            return False
     
     def _monitor_alerts(self):
         """Monitor and display alerts"""
@@ -445,7 +448,7 @@ class RealTimePipeline:
                 alerts = self.consumer_service.get_alerts()
                 
                 for alert in alerts:
-                    logger.warning(f"🚨 ALERT: {alert['alert_type']}")
+                    logger.warning(f"ALERT: {alert['alert_type']}")
                     logger.warning(f"   Source: {alert['src_ip']} -> {alert['dst_ip']}")
                     logger.warning(f"   Protocol: {alert['protocol']}")
                     logger.warning(f"   Severity: {alert['severity']}")

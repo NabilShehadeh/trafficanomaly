@@ -67,4 +67,4 @@ For feature requests, please:
 - Help others learn and grow
 - Follow the project's coding standards
 
-Thank you for contributing! 🎉
+Thank you for contributing.

@@ -91,7 +91,7 @@ DASHBOARD_CONFIG = {
     'title': 'Network Traffic Anomaly Detection',
     'page_config': {
         'page_title': 'Network Traffic Anomaly Detection',
-        'page_icon': '🛡️',
+        'page_icon': '',
         'layout': 'wide',
         'initial_sidebar_state': 'expanded'
     },

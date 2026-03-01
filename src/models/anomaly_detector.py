@@ -458,9 +458,14 @@ class AnomalyDetector:
             recall = np.sum((pred == 1) & (y == 1)) / (np.sum(y == 1) + 1e-8)
             f1_score = 2 * (precision * recall) / (precision + recall + 1e-8)
             
-            # Confusion matrix
-            tn, fp, fn, tp = confusion_matrix(y, pred).ravel()
-            
+            # Confusion matrix (handle edge case when only one class is present)
+            cm = confusion_matrix(y, pred)
+            cm_flat = cm.ravel()
+            tn = int(cm_flat[0]) if len(cm_flat) > 0 else 0
+            fp = int(cm_flat[1]) if len(cm_flat) > 1 else 0
+            fn = int(cm_flat[2]) if len(cm_flat) > 2 else 0
+            tp = int(cm_flat[3]) if len(cm_flat) > 3 else 0
+
             evaluation = {
                 'model': model_name,
                 'accuracy': accuracy,
