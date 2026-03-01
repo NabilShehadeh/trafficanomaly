@@ -4,25 +4,15 @@ A comprehensive system for detecting network anomalies in real-time using machin
 
 ---
 
-## Try it now
+## Interactive dashboard (live on first click)
 
-### Interactive dashboard (graph, histogram, heatmap)
+**Try the project immediately — no install required.** Open the dashboard to explore an interactive graph, histogram, and heatmap built from the same pipeline (traffic volume over time, packet and anomaly score distributions, feature correlations).
 
-When the repo is published on GitHub you get:
+[![Open Interactive Dashboard](https://img.shields.io/badge/Open-Interactive%20Dashboard-2088FF?style=for-the-badge&logo=github)](https://htmlpreview.github.io/?https://raw.githubusercontent.com/NabilShehadeh/trafficanomaly/main/docs/index.html)
 
-| Link | What you get |
-|------|----------------|
-| **[Open interactive dashboard](https://nabilshehadeh.github.io/trafficanomaly/)** | Graph, histogram and heatmap in the browser (no install). *Enable GitHub Pages from `/docs` to use this URL.* |
-| **[Open in Colab](https://colab.research.google.com/github/nabilshehadeh/trafficanomaly/blob/main/Traffic_Anomaly_Interactive_Demo.ipynb)** | Full pipeline plus interactive graph, histogram and heatmap in the notebook. |
+**[Open interactive dashboard](https://htmlpreview.github.io/?https://raw.githubusercontent.com/NabilShehadeh/trafficanomaly/main/docs/index.html)**
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/nabilshehadeh/trafficanomaly/blob/main/Traffic_Anomaly_Interactive_Demo.ipynb)
-
-The **dashboard** (`docs/index.html`) and the **notebook** both include:
-- **Interactive graph** — traffic volume over time (packets & anomalies)
-- **Interactive histogram** — packet length and anomaly score distributions
-- **Interactive heatmap** — feature correlation matrix
-
-*To enable the dashboard on GitHub: **Settings → Pages → Source**: Deploy from branch, branch `main`, folder `/docs`. Then the dashboard is at `https://<username>.github.io/trafficanomaly/`. You can also open `docs/index.html` locally in a browser.*
+Graph, histogram and heatmap in the browser. You can also open `docs/index.html` locally after cloning the repo.
 
 **Quick local run (after clone):**
 ```bash
