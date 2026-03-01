@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Traffic Anomaly Detection — Interactive Dashboard</title>
-  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+  <title>Traffic Anomaly Detection - Interactive Dashboard</title>
   <style>
     * { box-sizing: border-box; }
     body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 1rem; background: #0f1419; color: #e6edf3; }
@@ -13,79 +12,91 @@
     a { color: #58a6ff; }
     .chart { margin-bottom: 2rem; background: #161b22; border-radius: 8px; padding: 1rem; }
     .chart h2 { margin: 0 0 0.75rem; font-size: 1.1rem; font-weight: 600; }
-    #graph, #histogram, #heatmap { width: 100%; min-height: 380px; }
+    .chart div.plot { width: 100%; height: 400px; }
   </style>
 </head>
 <body>
   <h1>Traffic Anomaly Detection</h1>
-  <p class="sub">Interactive graph, histogram & heatmap — no install. <a href="https://github.com/nabilshehadeh/trafficanomaly">View repo</a> · <a href="https://colab.research.google.com/github/nabilshehadeh/trafficanomaly/blob/main/Traffic_Anomaly_Interactive_Demo.ipynb">Open in Colab</a></p>
+  <p class="sub">Interactive graph, histogram and heatmap. <a href="https://github.com/NabilShehadeh/trafficanomaly">View repo</a></p>
 
   <div class="chart">
-    <h2>Interactive graph — Traffic over time</h2>
-    <div id="graph"></div>
+    <h2>Interactive graph - Traffic over time</h2>
+    <div id="graph" class="plot"></div>
   </div>
   <div class="chart">
-    <h2>Interactive histogram — Packet length & anomaly scores</h2>
-    <div id="histogram"></div>
+    <h2>Interactive histogram - Packet length and anomaly scores</h2>
+    <div id="histogram" class="plot"></div>
   </div>
   <div class="chart">
-    <h2>Interactive heatmap — Feature correlations</h2>
-    <div id="heatmap"></div>
+    <h2>Interactive heatmap - Feature correlations</h2>
+    <div id="heatmap" class="plot"></div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist@2.27.0/min/plotly.min.js" crossorigin="anonymous"></script>
   <script>
-    // Embedded sample data (synthetic traffic-style)
-    const bucket = [0, 40, 80, 120, 160, 200, 240, 280, 320, 360, 400, 440, 480, 520, 560, 600, 640, 680, 720, 760];
-    const packets = [42, 38, 55, 61, 48, 72, 88, 51, 45, 59, 63, 71, 49, 82, 67, 54, 90, 58, 44, 76];
-    const anomalies = [2, 1, 3, 2, 2, 4, 5, 2, 1, 3, 3, 4, 2, 4, 3, 2, 5, 3, 2, 4];
-    const packetLengths = [64, 128, 256, 512, 768, 1024, 1280, 1500];
-    const lengthCounts = [120, 340, 280, 180, 95, 60, 45, 80];
-    const anomalyScores = [-0.15, -0.10, -0.05, 0, 0.05, 0.10, 0.15];
-    const scoreCounts = [80, 220, 350, 420, 180, 90, 60];
-    const features = ['src_port', 'dst_port', 'pkt_len', 'duration', 'bytes_sent', 'bytes_rcv', 'pkts_sent', 'pkts_rcv'];
-    const corrMatrix = [
-      [1, 0.02, 0.1, 0.05, 0.3, 0.2, 0.4, 0.25],
-      [0.02, 1, 0.08, 0.03, 0.15, 0.18, 0.12, 0.2],
-      [0.1, 0.08, 1, 0.22, 0.35, 0.28, 0.32, 0.3],
-      [0.05, 0.03, 0.22, 1, 0.4, 0.35, 0.38, 0.36],
-      [0.3, 0.15, 0.35, 0.4, 1, 0.7, 0.85, 0.72],
-      [0.2, 0.18, 0.28, 0.35, 0.7, 1, 0.68, 0.8],
-      [0.4, 0.12, 0.32, 0.38, 0.85, 0.68, 1, 0.75],
-      [0.25, 0.2, 0.3, 0.36, 0.72, 0.8, 0.75, 1]
-    ];
+    (function() {
+      function drawCharts() {
+        if (typeof Plotly === 'undefined') {
+          setTimeout(drawCharts, 50);
+          return;
+        }
+        var bucket = [0, 40, 80, 120, 160, 200, 240, 280, 320, 360, 400, 440, 480, 520, 560, 600, 640, 680, 720, 760];
+        var packets = [42, 38, 55, 61, 48, 72, 88, 51, 45, 59, 63, 71, 49, 82, 67, 54, 90, 58, 44, 76];
+        var anomalies = [2, 1, 3, 2, 2, 4, 5, 2, 1, 3, 3, 4, 2, 4, 3, 2, 5, 3, 2, 4];
+        var packetLengths = [64, 128, 256, 512, 768, 1024, 1280, 1500];
+        var lengthCounts = [120, 340, 280, 180, 95, 60, 45, 80];
+        var anomalyScores = [-0.15, -0.10, -0.05, 0, 0.05, 0.10, 0.15];
+        var scoreCounts = [80, 220, 350, 420, 180, 90, 60];
+        var features = ['src_port', 'dst_port', 'pkt_len', 'duration', 'bytes_sent', 'bytes_rcv', 'pkts_sent', 'pkts_rcv'];
+        var corrMatrix = [
+          [1, 0.02, 0.1, 0.05, 0.3, 0.2, 0.4, 0.25],
+          [0.02, 1, 0.08, 0.03, 0.15, 0.18, 0.12, 0.2],
+          [0.1, 0.08, 1, 0.22, 0.35, 0.28, 0.32, 0.3],
+          [0.05, 0.03, 0.22, 1, 0.4, 0.35, 0.38, 0.36],
+          [0.3, 0.15, 0.35, 0.4, 1, 0.7, 0.85, 0.72],
+          [0.2, 0.18, 0.28, 0.35, 0.7, 1, 0.68, 0.8],
+          [0.4, 0.12, 0.32, 0.38, 0.85, 0.68, 1, 0.75],
+          [0.25, 0.2, 0.3, 0.36, 0.72, 0.8, 0.75, 1]
+        ];
+        var layout = { paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: '#161b22', font: { color: '#e6edf3' }, margin: { t: 40, b: 40, l: 50, r: 30 }, xaxis: { gridcolor: '#30363d' }, yaxis: { gridcolor: '#30363d' } };
 
-    const layout = { paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: '#161b22', font: { color: '#e6edf3' }, margin: { t: 40, b: 40, l: 50, r: 30 }, xaxis: { gridcolor: '#30363d' }, yaxis: { gridcolor: '#30363d' } };
+        Plotly.newPlot('graph', [
+          { x: bucket, y: packets, type: 'scatter', mode: 'lines+markers', name: 'Packets', line: { color: '#58a6ff' }, marker: { size: 8 } },
+          { x: bucket, y: anomalies, type: 'scatter', mode: 'lines+markers', name: 'Anomalies', line: { color: '#f85149' }, marker: { size: 8 } }
+        ], { paper_bgcolor: layout.paper_bgcolor, plot_bgcolor: layout.plot_bgcolor, font: layout.font, margin: layout.margin, xaxis: { title: 'Sample bucket', gridcolor: '#30363d' }, yaxis: { title: 'Count', gridcolor: '#30363d' }, showlegend: true, legend: { x: 1, y: 1, xanchor: 'right' } }, { responsive: true });
 
-    // Graph: traffic over time
-    Plotly.newPlot('graph', [
-      { x: bucket, y: packets, type: 'scatter', mode: 'lines+markers', name: 'Packets', line: { color: '#58a6ff' }, marker: { size: 8 } },
-      { x: bucket, y: anomalies, type: 'scatter', mode: 'lines+markers', name: 'Anomalies', line: { color: '#f85149' }, marker: { size: 8 } }
-    ], { ...layout, title: 'Traffic volume over time', xaxis: { title: 'Sample bucket' }, yaxis: { title: 'Count' }, showlegend: true, legend: { x: 1, y: 1, xanchor: 'right' } }, { responsive: true });
+        Plotly.newPlot('histogram', [
+          { x: packetLengths, y: lengthCounts, type: 'bar', name: 'Packet length', marker: { color: '#58a6ff' } },
+          { x: anomalyScores, y: scoreCounts, type: 'bar', name: 'Anomaly score', xaxis: 'x2', yaxis: 'y2', marker: { color: '#f85149' } }
+        ], {
+          paper_bgcolor: layout.paper_bgcolor,
+          plot_bgcolor: layout.plot_bgcolor,
+          font: layout.font,
+          margin: layout.margin,
+          title: 'Distributions',
+          xaxis: { title: 'Packet length (bytes)', domain: [0, 0.48], gridcolor: '#30363d' },
+          yaxis: { title: 'Count', domain: [0, 1], gridcolor: '#30363d' },
+          xaxis2: { title: 'Anomaly score', domain: [0.52, 1] },
+          yaxis2: { title: 'Count', domain: [0, 1], anchor: 'x2' },
+          showlegend: true
+        }, { responsive: true });
 
-    // Histogram: packet length + anomaly scores (two panels)
-    Plotly.newPlot('histogram', [
-      { x: packetLengths, y: lengthCounts, type: 'bar', name: 'Packet length', marker: { color: '#58a6ff' } },
-      { x: anomalyScores, y: scoreCounts, type: 'bar', name: 'Anomaly score', xaxis: 'x2', yaxis: 'y2', marker: { color: '#f85149' } }
-    ], {
-      ...layout,
-      title: 'Distributions',
-      xaxis: { title: 'Packet length (bytes)', domain: [0, 0.48] },
-      yaxis: { title: 'Count', domain: [0, 1] },
-      xaxis2: { title: 'Anomaly score', domain: [0.52, 1] },
-      yaxis2: { title: 'Count', domain: [0, 1], anchor: 'x2' },
-      showlegend: true
-    }, { responsive: true });
-
-    // Heatmap: correlations
-    Plotly.newPlot('heatmap', [{
-      z: corrMatrix,
-      x: features,
-      y: features,
-      type: 'heatmap',
-      colorscale: [[0, '#238636'], [0.5, '#161b22'], [1, '#da3633']],
-      zmin: -0.2,
-      zmax: 1
-    }], { ...layout, title: 'Feature correlation matrix', xaxis: { tickangle: -45 }, yaxis: { autorange: 'reversed' } }, { responsive: true });
+        Plotly.newPlot('heatmap', [{
+          z: corrMatrix,
+          x: features,
+          y: features,
+          type: 'heatmap',
+          colorscale: [[0, '#238636'], [0.5, '#161b22'], [1, '#da3633']],
+          zmin: -0.2,
+          zmax: 1
+        }], { paper_bgcolor: layout.paper_bgcolor, plot_bgcolor: layout.plot_bgcolor, font: layout.font, margin: layout.margin, title: 'Feature correlation matrix', xaxis: { tickangle: -45 }, yaxis: { autorange: 'reversed' } }, { responsive: true });
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', drawCharts);
+      } else {
+        drawCharts();
+      }
+    })();
   </script>
 </body>
 </html>
